@@ -1,0 +1,40 @@
+[
+  {
+    "stepType": "replace",
+    "from": 27,
+    "to": 27,
+    "slice": {
+      "content": [
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "insertion",
+              "attrs": {
+                "user": 1,
+                "username": "johanneswilm",
+                "date": 25710790,
+                "approved": true
+              }
+            }
+          ],
+          "text": "X"
+        }
+      ]
+    }
+  },
+  {
+    "stepType": "addMark",
+    "mark": {
+      "type": "insertion",
+      "attrs": {
+        "user": 1,
+        "username": "johanneswilm",
+        "date": 25716230,
+        "approved": true
+      }
+    },
+    "from": 27,
+    "to": 28
+  }
+]

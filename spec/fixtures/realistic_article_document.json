@@ -1,0 +1,97 @@
+{
+  "type": "doc",
+  "content": [
+    {
+      "type": "article",
+      "attrs": {
+        "papersize": "A4",
+        "citationstyle": "apa",
+        "documentstyle": "elephant",
+        "language": "en-US",
+        "tracked": false
+      },
+      "content": [
+        {
+          "type": "title",
+          "content": [
+            {
+              "type": "text",
+              "marks": [
+                {
+                  "type": "insertion",
+                  "attrs": {
+                    "user": 1,
+                    "username": "johanneswilm",
+                    "date": 25710790,
+                    "approved": true
+                  }
+                }
+              ],
+              "text": "testing"
+            }
+          ]
+        },
+        {
+          "type": "subtitle",
+          "attrs": {
+            "hidden": true
+          }
+        },
+        {
+          "type": "authors",
+          "attrs": {
+            "hidden": true
+          }
+        },
+        {
+          "type": "abstract",
+          "attrs": {
+            "hidden": true
+          },
+          "content": [
+            {
+              "type": "paragraph",
+              "attrs": {
+                "track": []
+              }
+            }
+          ]
+        },
+        {
+          "type": "keywords",
+          "attrs": {
+            "hidden": true
+          }
+        },
+        {
+          "type": "body",
+          "content": [
+            {
+              "type": "paragraph",
+              "attrs": {
+                "track": []
+              },
+              "content": [
+                {
+                  "type": "text",
+                  "marks": [
+                    {
+                      "type": "insertion",
+                      "attrs": {
+                        "user": 1,
+                        "username": "johanneswilm",
+                        "date": 25710790,
+                        "approved": true
+                      }
+                    }
+                  ],
+                  "text": "the body"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
