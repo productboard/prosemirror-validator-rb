@@ -15,11 +15,27 @@ module ProseMirrorValidator
       content.length
     end
 
+    def empty?
+      size.zero?
+    end
+
+    def first_child
+      content.first
+    end
+
+    def last_child
+      content.last
+    end
+
     def child(index)
       found = content[index]
       raise ValidationError, "Index #{index} out of range for #{self}" unless found
 
       found
+    end
+
+    def maybe_child(index)
+      content[index]
     end
 
     def each(&)
@@ -30,7 +46,74 @@ module ProseMirrorValidator
       return self if other.empty?
       return other if size.zero?
 
-      Fragment.new(content + other.content)
+      last = last_child
+      first = other.first_child
+      joined_content = content.dup
+      index = 0
+
+      if last.text? && last.same_markup?(first)
+        joined_content[-1] = last.with_text(last.text + first.text)
+        index = 1
+      end
+
+      Fragment.new(joined_content + other.content.slice(index, other.content.length), size + other.size)
+    end
+
+    def cut(from, to = size)
+      return self if from.zero? && to == size
+
+      result = []
+      cut_size = 0
+      position = 0
+
+      content.each do |child|
+        break if position >= to
+
+        ending = position + child.node_size
+        if ending > from
+          cut_child = child
+          if position < from || ending > to
+            cut_child = if child.text?
+                          child.cut([0, from - position].max, [child.text.length, to - position].min)
+                        else
+                          child.cut([0, from - position - 1].max, [child.content.size, to - position - 1].min)
+                        end
+          end
+          result << cut_child
+          cut_size += cut_child.node_size
+        end
+        position = ending
+      end
+
+      Fragment.new(result, cut_size)
+    end
+
+    def replace_child(index, node)
+      current = content[index]
+      return self if current.equal?(node)
+
+      copy = content.dup
+      copy[index] = node
+      Fragment.new(copy, size + node.node_size - current.node_size)
+    end
+
+    def find_index(position)
+      return { index: 0, offset: 0 } if position.zero?
+      return { index: content.length, offset: position } if position == size
+
+      if position.negative? || position > size
+        raise ValidationError,
+              "Position #{position} outside of fragment (#{self})"
+      end
+
+      current_position = 0
+      content.each_with_index do |child, index|
+        ending = current_position + child.node_size
+        return { index: index + 1, offset: ending } if ending == position
+        return { index: index, offset: current_position } if ending > position
+
+        current_position = ending
+      end
     end
 
     def to_json_object

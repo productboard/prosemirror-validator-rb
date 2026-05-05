@@ -50,6 +50,10 @@ module ProseMirrorValidator
       content_match.equal?(ContentMatch.empty)
     end
 
+    def atom?
+      leaf? || !!spec['atom']
+    end
+
     def in_group?(group)
       groups.include?(group)
     end

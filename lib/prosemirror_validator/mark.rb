@@ -40,6 +40,18 @@ module ProseMirrorValidator
       copy.freeze
     end
 
+    def remove_from_set(set)
+      set.each_with_index do |mark, index|
+        return (set.slice(0, index) + set.slice(index + 1, set.length)).freeze if eq?(mark)
+      end
+
+      set
+    end
+
+    def in_set?(set)
+      set.any? { |mark| eq?(mark) }
+    end
+
     def eq?(other)
       equal?(other) || (type.equal?(other.type) && Utils.deep_equal?(attrs, other.attrs))
     end
