@@ -557,6 +557,7 @@ gem build prosemirror-validator.gemspec
 - ProseMirror reference manual: https://prosemirror.net/docs/ref/
 - ProseMirror model source: https://github.com/ProseMirror/prosemirror-model
 - ProseMirror transform source: https://github.com/ProseMirror/prosemirror-transform
+- Fidus Writer Python wrapper: https://github.com/fiduswriter/prosemirror-python
 
 ## License
 
