@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'schema'
+require_relative 'updates'
 
 module ProseMirrorValidator
   module Validator
@@ -15,6 +16,14 @@ module ProseMirrorValidator
       true
     rescue Error
       false
+    end
+
+    def validate_steps!(document:, steps:, schema_spec:)
+      Updates.validate_steps!(document: document, steps: steps, schema_spec: schema_spec)
+    end
+
+    def valid_steps?(document:, steps:, schema_spec:)
+      Updates.valid_steps?(document: document, steps: steps, schema_spec: schema_spec)
     end
   end
 end

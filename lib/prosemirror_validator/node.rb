@@ -2,6 +2,9 @@
 
 require_relative 'fragment'
 require_relative 'mark'
+require_relative 'replacement'
+require_relative 'resolved_pos'
+require_relative 'slice'
 require_relative 'utils'
 
 module ProseMirrorValidator
@@ -27,6 +30,22 @@ module ProseMirrorValidator
       content.child_count
     end
 
+    def child(index)
+      content.child(index)
+    end
+
+    def maybe_child(index)
+      content.maybe_child(index)
+    end
+
+    def first_child
+      content.first_child
+    end
+
+    def last_child
+      content.last_child
+    end
+
     def block?
       type.block?
     end
@@ -43,8 +62,84 @@ module ProseMirrorValidator
       type.leaf?
     end
 
+    def atom?
+      type.atom?
+    end
+
     def same_markup?(other)
       type.equal?(other.type) && Utils.deep_equal?(attrs, other.attrs) && Mark.same_set?(marks, other.marks)
+    end
+
+    def copy(content = nil)
+      return self if content.equal?(self.content)
+
+      Node.new(type, attrs, content || self.content, marks)
+    end
+
+    def mark(marks)
+      return self if marks.equal?(self.marks)
+
+      Node.new(type, attrs, content, marks)
+    end
+
+    def cut(from, to = content.size)
+      return self if from.zero? && to == content.size
+
+      copy(content.cut(from, to))
+    end
+
+    def slice(from, to = content.size, include_parents: false)
+      return Slice.empty if from == to
+
+      resolved_from = resolve(from)
+      resolved_to = resolve(to)
+      depth = include_parents ? 0 : resolved_from.shared_depth(to)
+      start = resolved_from.start(depth)
+      node = resolved_from.node(depth)
+      Slice.new(
+        node.content.cut(resolved_from.pos - start, resolved_to.pos - start),
+        resolved_from.depth - depth,
+        resolved_to.depth - depth
+      )
+    end
+
+    def replace(from, to, slice)
+      Replacement.replace(resolve(from), resolve(to), slice)
+    end
+
+    def resolve(position)
+      ResolvedPos.resolve(self, position)
+    end
+
+    def resolve_no_cache(position)
+      ResolvedPos.resolve(self, position)
+    end
+
+    def node_at(position)
+      node = self
+      loop do
+        found = node.content.find_index(position)
+        node = node.maybe_child(found.fetch(:index))
+        return nil unless node
+        return node if found.fetch(:offset) == position || node.text?
+
+        position -= found.fetch(:offset) + 1
+      end
+    end
+
+    def content_match_at(index)
+      match = type.content_match.match_fragment(content, 0, index)
+      raise Error, 'Called content_match_at on a node with invalid content' unless match
+
+      match
+    end
+
+    def can_replace?(from, to, replacement = Fragment.empty, start_index = 0, end_index = replacement.child_count)
+      one = content_match_at(from).match_fragment(replacement, start_index, end_index)
+      two = one&.match_fragment(content, to)
+      return false unless two&.valid_end?
+
+      (start_index...end_index).all? { |index| type.allows_marks?(replacement.child(index).marks) }
     end
 
     def check!
@@ -131,6 +226,18 @@ module ProseMirrorValidator
 
     def with_text(text)
       return self if text == self.text
+
+      TextNode.new(type, attrs, text, marks)
+    end
+
+    def cut(from, to = text.length)
+      return self if from.zero? && to == text.length
+
+      with_text(text.slice(from...to))
+    end
+
+    def mark(marks)
+      return self if marks.equal?(self.marks)
 
       TextNode.new(type, attrs, text, marks)
     end
