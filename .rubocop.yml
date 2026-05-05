@@ -1,0 +1,31 @@
+plugins:
+  - rubocop-rake
+  - rubocop-rspec
+
+AllCops:
+  NewCops: enable
+  TargetRubyVersion: 3.3
+
+Metrics/AbcSize:
+  Max: 40
+
+Metrics/ClassLength:
+  Max: 130
+
+Metrics/CyclomaticComplexity:
+  Max: 12
+
+Metrics/MethodLength:
+  Max: 25
+
+Metrics/PerceivedComplexity:
+  Max: 13
+
+RSpec/ExampleLength:
+  Max: 20
+
+RSpec/MultipleExpectations:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false
