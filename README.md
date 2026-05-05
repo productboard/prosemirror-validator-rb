@@ -534,10 +534,10 @@ Run checks:
 bundle exec rake
 ```
 
-Run only specs:
+Run only tests:
 
 ```sh
-bundle exec rspec
+bundle exec rake test
 ```
 
 Run only RuboCop:
